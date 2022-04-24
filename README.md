@@ -1,4 +1,4 @@
-```javascript
+```text
 --version
   node v16.13.1
   yarn v1.22.18
@@ -10,7 +10,7 @@
 ## .editorconfig 统一代码的风格及样式规范化
 
 ```.editorconfig
-# http://editorconfig.org
+# https://editorconfig.org/
 
 root = true
 [*] # 表示所有文件适用
@@ -59,7 +59,7 @@ trim_trailing_whitespace = false
 
 ```package.json
 "script":{
-	"prettier":"prettier --write ."
+    "prettier":"prettier --write ."
 }
 ```
 
@@ -105,6 +105,6 @@ npm run lint
 
 // 并在package.json script中添加脚本
 "script": {
-	"prepare": "husky install"
+    "prepare": "husky install"
 }
 ```
