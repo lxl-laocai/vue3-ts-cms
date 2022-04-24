@@ -1,5 +1,5 @@
 ```text
---version
+项目版本--version
   node v16.13.1
   yarn v1.22.18
   npm  v8.7.0
@@ -143,4 +143,55 @@ const store = createStore({
   }
 });
 export default store;
+```
+
+## element-plus
+
+```
+yarn add element-plus
+按需引入:
+  方式一:
+    yarn add babel-plugin-import -D
+    在babel.config.js中:
+    module.exports = {
+      plugins: [
+        [
+          "import",
+          {
+            libraryName: "element-plus",
+            customStyleName: (name) => {
+              return `element-plus/lib/theme-chalk/${name}.css`
+            }
+          }
+        ]
+      ],
+      presets: ["@vue/cli-plugin-babel/preset"]
+    };
+    import { ElButton } from "element-plus";
+    const components = [ElButton]
+    export default function registerApp(app: App):void {
+      for (const component of components) {
+        app.component(component.name, component)
+      }
+    }
+    // 使用一
+    registerApp(app)
+    // 使用二
+    app.use(registerApp)
+  方式二:
+  yarn add unplugin-vue-components unplugin-auto-import -D
+  在vue.从vue.config.js
+    const AutoImport = require("unplugin-auto-import/webpack");
+    const Components = require("unplugin-vue-components/webpack");
+    const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
+    configureWebpack: {
+      plugins: [
+        AutoImport({
+          resolvers: [ElementPlusResolver()]
+        }),
+        Components({
+          resolvers: [ElementPlusResolver()]
+        })
+      ]
+    }
 ```
