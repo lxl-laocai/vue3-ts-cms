@@ -94,17 +94,53 @@ module.exports = {
 ## git Husky 代码提交仓库 commit 前 自动校验 eslint
 
 ```husky
-// yarn add husky -D
-// npx husky install
-// 在.husky下创建 pre-commit
+方式一: npx husky-init '&&' npm install
+方式二:yarn add husky -D
+      npx husky install
+      在.husky下创建 pre-commit
 
 #!/bin/sh
 ."$(dirname "$0")/_/husky.sh"
-
 npm run lint
 
 // 并在package.json script中添加脚本
 "script": {
     "prepare": "husky install"
 }
+```
+
+## git 初始化
+
+```git
+  git add .   // 添加项目所有文件到本地仓库
+  git commit -m "提交消息" // 版本提交和备注
+  git remote add origin 仓库地址 // 本地仓库和git仓库进行关联
+  git push origin master  // pull本地仓库的内容
+```
+
+## vue-router
+
+```typescript
+// yarn add vue-router@next
+import { createRouter, createWebHashHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+const routes: RouteRecordRaw[] = [];
+const router = createRouter({
+  routes,
+  history: createWebHashHistory()
+});
+export default router;
+```
+
+## vuex
+
+```typescript
+// yarn add vuex@next
+import { createStore } from "vuex";
+const store = createStore({
+  state() {
+    return {};
+  }
+});
+export default store;
 ```
