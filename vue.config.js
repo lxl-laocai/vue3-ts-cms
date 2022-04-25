@@ -18,8 +18,5 @@ module.exports = defineConfig({
       })
     ]
   },
-  outputDir: "./build",
-  devServer: {
-    open: true
-  }
+  outputDir: "./build"
 });
