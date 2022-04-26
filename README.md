@@ -195,3 +195,9 @@ yarn add element-plus
       ]
     }
 ```
+
+## axios
+
+```ts
+// yarn add axios
+```
