@@ -67,7 +67,7 @@ class MyRequest {
     );
   }
 
-  request<T>(config: IAxiosRequestConfig): Promise<T> {
+  request<T>(config: IAxiosRequestConfig<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       // 请求拦截器
       if (config.interceptors?.requestInterceptor) {
@@ -80,7 +80,7 @@ class MyRequest {
         .request<any, T>(config)
         .then((res) => {
           if (config.interceptors?.responseInterceptor) {
-            // res = config.interceptors.responseInterceptor(res);
+            res = config.interceptors.responseInterceptor(res);
           }
           this.showLoading = DEFAULT_LOADING;
           resolve(res);
@@ -92,16 +92,16 @@ class MyRequest {
     });
   }
 
-  get<T>(config: IAxiosRequestConfig): Promise<T> {
+  get<T>(config: IAxiosRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "GET" });
   }
-  post<T>(config: IAxiosRequestConfig): Promise<T> {
+  post<T>(config: IAxiosRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "POST" });
   }
-  delete<T>(config: IAxiosRequestConfig): Promise<T> {
+  delete<T>(config: IAxiosRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "DELETE" });
   }
-  patch<T>(config: IAxiosRequestConfig): Promise<T> {
+  patch<T>(config: IAxiosRequestConfig<T>): Promise<T> {
     return this.request<T>({ ...config, method: "PATCH" });
   }
 }
