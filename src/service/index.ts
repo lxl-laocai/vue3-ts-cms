@@ -2,10 +2,9 @@ import MyRequest from "./request";
 
 const request = new MyRequest({
   baseURL: process.env.VUE_APP_BASE_URL,
-  timeout: process.env.VUE_APP_TIME_OUT,
+  timeout: Number(process.env.VUE_APP_TIME_OUT),
   interceptors: {
     requestInterceptor(config) {
-      console.log("实例拦截器");
       return config;
     },
     requestInterceptorCatch(err) {

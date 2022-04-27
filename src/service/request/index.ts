@@ -1,16 +1,26 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
-
+import { ElLoading } from "element-plus";
+import type { LoadingInstance } from "element-plus/lib/components/loading/src/loading";
 import type { IAxiosRequestConfig, IAxiosRequestInterceptors } from "./types";
+
+const DEFAULT_LOADING = true;
 
 class MyRequest {
   instance: AxiosInstance;
   interceptors?: IAxiosRequestInterceptors;
+  showLoading: boolean;
+  loading?: LoadingInstance;
 
   constructor(config: IAxiosRequestConfig) {
+    // 创建axios实例
     this.instance = axios.create(config);
+
+    // 保存基本信息
+    this.showLoading = config.showLoading ?? DEFAULT_LOADING;
     this.interceptors = config.interceptors;
-    // 自定义实例拦截器
+
+    // 从config中取出拦截器是对应实例的拦截器
     this.instance.interceptors.request.use(
       this.interceptors?.requestInterceptor,
       this.interceptors?.requestInterceptorCatch
@@ -19,10 +29,16 @@ class MyRequest {
       this.interceptors?.responseInterceptor,
       this.interceptors?.responseInterceptorCatch
     );
-    // 共有实例拦截器
+
+    // 添加所有的实例都有的拦截器
     this.instance.interceptors.request.use(
       (config) => {
-        console.log("共有实例拦截器");
+        if (this.showLoading) {
+          this.loading = ElLoading.service({
+            lock: true,
+            text: "加载中..."
+          });
+        }
         return config;
       },
       (error) => {
@@ -31,26 +47,62 @@ class MyRequest {
     );
     this.instance.interceptors.response.use(
       (res) => {
-        return res;
+        setTimeout(() => {
+          this.loading?.close();
+        }, 3000);
+        const data = res.data;
+        if (data.returnCode === "-1001") {
+          console.log("请求失败~");
+        } else {
+          return data;
+        }
       },
-      (error) => {
-        return error;
+      (err) => {
+        this.loading?.close();
+        if (err.response.status === 404) {
+          console.log("404错误");
+        }
+        return err;
       }
     );
   }
 
-  request(config: IAxiosRequestConfig): void {
-    // 请求拦截器
-    if (config.interceptors?.requestInterceptor) {
-      config = config.interceptors.requestInterceptor(config);
-    }
-    this.instance.request(config).then((res) => {
-      if (config.interceptors?.responseInterceptor) {
-        res = config.interceptors.responseInterceptor(res);
+  request<T>(config: IAxiosRequestConfig): Promise<T> {
+    return new Promise((resolve, reject) => {
+      // 请求拦截器
+      if (config.interceptors?.requestInterceptor) {
+        config = config.interceptors.requestInterceptor(config);
       }
-      console.log("请求拦截器");
-      return res;
+      if (config.showLoading === false) {
+        this.showLoading = config.showLoading;
+      }
+      this.instance
+        .request<any, T>(config)
+        .then((res) => {
+          if (config.interceptors?.responseInterceptor) {
+            // res = config.interceptors.responseInterceptor(res);
+          }
+          this.showLoading = DEFAULT_LOADING;
+          resolve(res);
+        })
+        .catch((err) => {
+          this.showLoading = DEFAULT_LOADING;
+          reject(err);
+        });
     });
+  }
+
+  get<T>(config: IAxiosRequestConfig): Promise<T> {
+    return this.request<T>({ ...config, method: "GET" });
+  }
+  post<T>(config: IAxiosRequestConfig): Promise<T> {
+    return this.request<T>({ ...config, method: "POST" });
+  }
+  delete<T>(config: IAxiosRequestConfig): Promise<T> {
+    return this.request<T>({ ...config, method: "DELETE" });
+  }
+  patch<T>(config: IAxiosRequestConfig): Promise<T> {
+    return this.request<T>({ ...config, method: "PATCH" });
   }
 }
 
